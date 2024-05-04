@@ -27,17 +27,32 @@ banco1
 tab <- table(banco$format)
 tab
 
-tab2<-banco1$date_aired
+tab2 <- banco1$date_aired
 banco1 %>% distinct(date_aired)
 
 # limpando coluna date_aired#----
 
-banco1$date_aired <- as.Date(banco1$date_aired)
+banco1$date_aired <- as.Date(banco1$date_aired, "%Y-%m-%d")
+class(banco1$date_aired)
+banco1$date_aired <- year(banco1$date_aired)
 
+#separando em décadas 
+
+tentativa<-banco1$date_aired
+decadas<-cut(tentativa, breaks= seq(1960, 2030, by=10), labels= seq(1960, 2020,by=10))
+anosxdecadas <- data.frame(ano=tentativa, década= as.numeric(as.character(decadas)))
+anosxdecadas
+
+#tentando agrupar date_aired com format 
+formato<-banco1$format
+tentativatab <- banco1%>%
+  group_by(anosxdecadas, formato)
+frequência <- table(tentativatab)
+frequência
 # 2) ----
 
 banco1 %>% distinct(banco1$season)
-season <- c(1,2,3,4)
+season<- c(1,2,3,4)
 dados2<-banco1[banco1$season %in% season,]
 class(banco1$season)
 banco1$season <- as.character(banco1$season)
@@ -62,4 +77,5 @@ filtro1
 
 tb <- table(banco1$season, banco1$imdb)%>%prop.table(1)
 tb  
-
+class(filtro1)
+rm(dados2)

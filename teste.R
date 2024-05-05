@@ -38,17 +38,62 @@ banco1$date_aired <- year(banco1$date_aired)
 
 #separando em décadas 
 
-tentativa<-banco1$date_aired
-decadas<-cut(tentativa, breaks= seq(1960, 2030, by=10), labels= seq(1960, 2020,by=10))
-anosxdecadas <- data.frame(ano=tentativa, década= as.numeric(as.character(decadas)))
-anosxdecadas
+data.lançamento <-banco1$date_aired
+décadas <-cut(tentativa, breaks= seq(1960, 2030, by=10), labels= seq(1960, 2020,by=10))
+lançamento.década <- data.frame(ano=data.lançamento, décadas = as.numeric(as.character(decadas)))
 
 #tentando agrupar date_aired com format 
-formato<-banco1$format
-tentativatab <- banco1%>%
-  group_by(anosxdecadas, formato)
+
+formato <- banco1$format
+lançamento.formato <- banco1%>%
+  group_by(lançamento.década, formato)
+
+
 frequência <- table(tentativatab)
-frequência
+frequência.lançamento <- data.frame(tentativatab)
+frequência.lançamento <- seq()
+formato <- as.data.frame(formato)
+lançamentos <- tentativatab %>%
+  group_by(lançamento.década)
+
+#gráfico análise 1 
+
+estat_colors <- c(
+  "#A11D21", "#003366", "#CC9900",
+  "#663333", "#FF6600", "#CC9966",
+  "#999966", "#006606", "#008091", 
+  "#041835", "#666666" )
+theme_estat <- function(...) {
+  theme <- ggplot2::theme_bw() +
+    ggplot2::theme(
+      axis.title.y = ggplot2::element_text(colour = "black", size = 12),
+      axis.title.x = ggplot2::element_text(colour = "black", size = 12),
+      axis.text = ggplot2::element_text(colour = "black", size = 9.5),
+      panel.border = ggplot2::element_blank(),
+      axis.line = ggplot2::element_line(colour = "black"),
+      legend.position = "top",
+      ...
+    )
+  
+  return(
+    list(
+      theme,
+      scale_fill_manual(values = estat_colors),
+      scale_colour_manual(values = estat_colors)
+    )
+  )
+}
+
+ggplot(data= dados, mapping= aes(x = década, y= Freq, fill = Formato ))+
+  geom_col(position="dodge")+
+  labs(x="Décadas", y= "N° de lançamentos")+
+  theme_estat()
+ggsave("análise1.pdf", width = 158, height = 93, units = "mm")
+
+dados<-dados%>%rename(Formato=banco1.format)
+
+
+
 # 2) ----
 
 banco1 %>% distinct(banco1$season)

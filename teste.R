@@ -124,3 +124,60 @@ tb <- table(banco1$season, banco1$imdb)%>%prop.table(1)
 tb  
 class(filtro1)
 rm(dados2)
+
+# análise 3 
+banco1<- banco
+banco1$setting_terrain
+terreno <- banco1$setting_terrain
+terreno <- as.data.frame(banco1$setting_terrain)
+terreno <- frequency(n())
+terreno <- terreno%>%
+  arrange(desc(Freq))
+terreno
+
+banco1$trap_work_first
+
+terreno.armadilha <- banco1%>%
+  group_by(setting_terrain, trap_work_first)
+terreno.armadilha
+rm(terreno.armadilha)
+armadilha <- banco1$trap_work_first
+terreno<- group_by(armadilha)
+armadilha <- as.data.frame(armadilha)
+terreno <- frequency(n())
+terreno.armadilha <- table(banco1$setting_terrain, banco1$trap_work_first)
+terreno.armadilha <- count(terreno.armadilha$banco1.setting_terrain)%>%
+  arrange(desc(n))
+  
+terreno.armadilha
+terreno <- as.table(terreno)
+terreno1 <-table(banco1$setting_terrain)
+terreno1<- as.data.frame(terreno1)
+terreno1 <-  terreno1%>%
+  arrange(desc(Freq))
+terreno.armadilha
+terreno1 <- data.frame(terreno1$Freq/sum(terreno1$Freq))
+tabela.terreno <- table(banco1$setting_terrain)
+tabela1 <- terreno1%>%
+  mutate(frequencia.relativa = 100*(Freq/sum(Freq)))
+tabela.terreno
+sum(tabela1$frequencia.relativa)
+
+# gráfico pra terreno mais frequente 
+
+tabela1<-rename(tabela1, terreno=Var1)
+ggplot()+theme_bw()+
+  geom_bar(aes(x="", y=tabela1$frequencia.relativa, fill=tabela1$terreno), stat="identity", color="white")+
+  coord_polar("y", start=0)+
+  scale_fill_manual(values = estat_colors, name = 'terreno')
+
+ggplot(data= tabela1, mapping= aes(x = reorder(terreno, frequencia.relativa), y= frequencia.relativa))+
+  geom_col()+
+  labs(x="Tipo de Terreno", y= "Frequência relativa (%)")
+           
+# limpando df (tipo de terreno x ativação da armadilha)
+
+teste <- terreno.armadilha 
+teste
+teste<- terreno.armadilha[]
+

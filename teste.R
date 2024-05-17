@@ -165,19 +165,23 @@ sum(tabela1$frequencia.relativa)
 
 # gráfico pra terreno mais frequente 
 
-tabela1<-rename(tabela1, terreno=Var1)
-ggplot()+theme_bw()+
-  geom_bar(aes(x="", y=tabela1$frequencia.relativa, fill=tabela1$terreno), stat="identity", color="white")+
-  coord_polar("y", start=0)+
-  scale_fill_manual(values = estat_colors, name = 'terreno')
-
 ggplot(data= tabela1, mapping= aes(x = reorder(terreno, frequencia.relativa), y= frequencia.relativa))+
   geom_col()+
   labs(x="Tipo de Terreno", y= "Frequência relativa (%)")
            
 # limpando df (tipo de terreno x ativação da armadilha)
-
+terreno
 teste <- terreno.armadilha 
-teste
-teste<- terreno.armadilha[]
+teste <- as.data.frame(teste)
+teste<- slice(teste, c(5, 11, 15, 20, 26, 30, 35, 41, 45))
+teste<- slice(teste, 4:9)
+
+#gráfico tipo de terreno x ativação da armadilha 
+
+teste <- rename(teste, ativação= Var2)
+ggplot(data= teste, mapping= aes(x = Var1, y= Freq, fill = ativação ))+
+  geom_col(position="dodge")+
+  labs(x="Tipo de terreno", y= "N° de ativações")+
+  theme_estat()
+
 

@@ -164,6 +164,7 @@ ggplot(seasonximdb) +
   labs(x = "Temporada", y = "Nota IMDB") +
   theme_estat()
 
+
 ggplot(seasonximdb) +
   aes(x = reorder(season, imdb), y = imdb) +
   geom_boxplot(fill = c("#A11D21"), width = 0.5) +
@@ -275,6 +276,7 @@ ggplot(imbdxengajamento) +
   labs(
     x = "E",
     y = "f"
+    
   ) +
   theme_estat()
 mean(imbdxengajamento$banco1.imdb)
@@ -287,3 +289,171 @@ sd(imbdxengajamento$banco1.engagement)
 
 imbdxengajamento
 cor.test(imbdxengajamento$banco1.imdb, imbdxengajamento$banco1.engagement, method="pearson")
+
+
+# análise 5 -----
+
+personagensxengajamento <- data.frame(banco$unmask_fred, banco$unmask_daphnie, banco$unmask_velma, banco$unmask_shaggy, banco$unmask_scooby, banco$unmask_other, banco$engagement)
+fred <- data.frame(banco$unmask_fred, banco$engagement)
+fred <- as.logical(fred$banco.unmask_fred)
+fred <- filter(fred, fred$banco.unmask_fred == "True")
+fredf<- data.frame(banco$unmask_fred, banco$engagement)
+fredf <- filter(fredf, fredf$banco.unmask_fred == "False")
+Fred <- bind_rows(fred, fredf)
+Fred
+
+daphnie <- data.frame(banco$unmask_daphnie, banco$engagement)
+daphT <- filter(daphnie, daphnie$banco.unmask_daphnie == "True")
+daphF <- filter(daphnie, daphnie$banco.unmask_daphnie == "False")
+Daphnie <- bind_rows(daphT, daphF)
+
+velma <- data.frame(banco$unmask_velma, banco$engagement)
+velmaT <- filter(velma, velma$banco.unmask_velma == "True")
+velmaF <- filter(velma, velma$banco.unmask_velma == "False")
+Velma <- bind_rows(velmaT, velmaF)
+
+dados
+
+shaggy <- data.frame(banco$unmask_shaggy, banco$engagement)
+shaggyT <- filter(shaggy, shaggy$banco.unmask_shaggy == "True")
+shaggyF <- filter(shaggy, shaggy$banco.unmask_shaggy == "False")
+Shaggy <- bind_rows(shaggyT, shaggyF)
+
+scooby <- data.frame(banco$unmask_scooby, banco$engagement)
+scoobyT <- filter(scooby, scooby$banco.unmask_scooby == "True")
+scoobyF <- filter(scooby, scooby$banco.unmask_scooby == "False")
+Scooby <- bind_rows(scoobyT, scoobyF)
+
+other <- data.frame(banco$unmask_other, banco$engagement)
+otherT <- filter(other, other$banco.unmask_other == "True")
+otherF <- filter(other, other$banco.unmask_other == "False")
+Other <- bind_rows(otherT, otherF)
+
+ggplot(Scooby) +
+  aes(x = banco.unmask_scooby, y = banco.engagement) +
+  geom_boxplot(fill = c("#A11D21", "#003366") , width = 0.5) +
+  stat_summary(
+    fun = "mean", geom = "point", shape = 23, size = 3, fill = "white"
+  ) +
+  labs(x = "Capturou ou não capturou", y = "Engajamento") +
+  theme_estat()
+
+ggplot(Other) +
+  aes(x = banco.unmask_other, y = banco.engagement) +
+  geom_boxplot(fill = c("#A11D21", "#003366") , width = 0.5) +
+  stat_summary(
+    fun = "mean", geom = "point", shape = 23, size = 3, fill = "white"
+  ) +
+  labs(x = "Capturou ou não capturou", y = "Engajamento") +
+  theme_estat()
+
+ggplot(Shaggy) +
+  aes(x = banco.unmask_shaggy, y = banco.engagement) +
+  geom_boxplot(fill = c("#A11D21", "#003366") , width = 0.5) +
+  stat_summary(
+    fun = "mean", geom = "point", shape = 23, size = 3, fill = "white"
+  ) +
+  labs(x = "Capturou ou não capturou", y = "Engajamento") +
+  theme_estat()
+
+ggplot(Velma) +
+  aes(x = banco.unmask_velma, y = banco.engagement) +
+  geom_boxplot(fill = c("#A11D21", "#003366") , width = 0.5) +
+  stat_summary(
+    fun = "mean", geom = "point", shape = 23, size = 3, fill = "white"
+  ) +
+  labs(x = "Capturou ou não capturou", y = "Engajamento") +
+  theme_estat()
+
+ggplot(Daphnie) +
+  aes(x = banco.unmask_daphnie, y = banco.engagement) +
+  geom_boxplot(fill = c("#A11D21", "#003366") , width = 0.5) +
+  stat_summary(
+    fun = "mean", geom = "point", shape = 23, size = 3, fill = "white"
+  ) +
+  labs(x = "Capturou ou não capturou", y = "Engajamento") +
+  theme_estat()
+
+ggplot(Fred) +
+  aes(x = banco.unmask_fred, y = banco.engagement) +
+  geom_boxplot(fill = c("#A11D21", "#003366") , width = 0.5) +
+  stat_summary(
+    fun = "mean", geom = "point", shape = 23, size = 3, fill = "white"
+  ) +
+  labs(x = "Capturou ou não capturou", y = "Engajamento") +
+  theme_estat()
+
+
+summary(fredf) 
+sd(fredf$banco.engagement)
+var(fredf$banco.engagement)
+
+summary(fred) 
+sd(fred$banco.engagement)
+var(fred$banco.engagement)
+
+summary(velmaF) 
+sd(velmaF$banco.engagement)
+var(velmaF$banco.engagement)
+
+summary(velmaT) 
+sd(velmaT$banco.engagement)
+var(velmaT$banco.engagement)
+
+summary(daphT)
+sd(daphT$banco.engagement)
+var(daphT$banco.engagement)
+
+summary(daphF)
+sd(daphF$banco.engagement)
+var(daphF$banco.engagement)
+
+summary(shaggyF)
+sd(shaggyF$banco.engagement)
+var(shaggyF$banco.engagement)
+
+summary(shaggyT)
+sd(shaggyT$banco.engagement)
+var(shaggyT$banco.engagement)
+
+
+summary(scoobyF)
+sd(scoobyF$banco.engagement)
+var(scoobyF$banco.engagement)
+
+summary(scoobyT)
+sd(scoobyT$banco.engagement)
+var(scoobyT$banco.engagement)
+
+summary(otherF)
+sd(otherF$banco.engagement)
+var(otherF$banco.engagement)
+
+summary(otherT)
+sd(otherT$banco.engagement)
+var(otherT$banco.engagement)
+
+tentativa <- bind_rows(daphT, velmaT)
+tentativa
+velmaT
+velmaT$banco.engagement <- NULL
+daphT$banco.engagement <- NULL
+daphT <- c(daphT, rep(NA, length(velmaT)- length(daphT)))
+nova <- c(daphT, velmaT)
+boxplots <- na.omit(boxplots$banco.unmask_fred)
+
+boxplots <- bind_cols(fred, daphT, velmaT, shaggyT, scoobyT, otherT)
+
+ggplot(boxplots) +
+  aes(x = , y = banco.engagement) +
+  geom_boxplot(fill = c("#A11D21"), width = 0.5) +
+  stat_summary(
+    fun = "mean", geom = "point", shape = 23, size = 3, fill = "white"
+  ) +
+  labs(x = "p", y = "e") +
+  theme_estat()
+ggsave("box_bi.pdf", width = 158, height = 93, units = "mm")
+
+tentativa$novacoluna <- ifelse(is.na(tentativa$banco.unmask_daphnie), tentativa$banco.unmask_daphnie, tentativa$banco.unmask_velma)
+
+solução <- data.frame(banco$engagement)                

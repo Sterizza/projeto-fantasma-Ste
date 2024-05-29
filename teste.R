@@ -173,6 +173,7 @@ ggplot(seasonximdb) +
   ) +
   labs(x = "Temporada", y = "Nota IMDB") +
   theme_estat()
+ggsave("box2.pdf", width = 158, height = 93, units = "mm")
 
 class(banco1$imbd)
 season.imdb$imdb <- as.numeric(season.imdb$imdb)
@@ -238,10 +239,12 @@ sum(tabela1$frequencia.relativa)
 
 # gráfico pra terreno mais frequente 
 
-ggplot(data= tabela1, mapping= aes(x = reorder(terreno, frequencia.relativa), y= frequencia.relativa))+
+ggplot(data= tabela1, mapping= aes(x = reorder(Var1, frequencia.relativa), y= frequencia.relativa))+
   geom_col(fill = "#A11D21")+
-  labs(x="Tipo de Terreno", y= "Frequência relativa (%)")
-           
+  labs(x="Tipo de Terreno", y= "Frequência relativa (%)")+
+  theme_estat()
+ggsave("barr.pdf", width = 158, height = 93, units = "mm")
+
 # limpando df (tipo de terreno x ativação da armadilha)
 terreno
 teste <- terreno.armadilha 
@@ -256,18 +259,21 @@ ggplot(data= teste, mapping= aes(x = Var1, y= Freq, fill = ativação ))+
   geom_col(position="dodge")+
   labs(x="Tipo de terreno", y= "N° de ativações")+
   theme_estat()
+ggsave("barr2.pdf", width = 158, height = 93, units = "mm")
 
 # análise 4 ----
 
 imbdxengajamento <- data.frame(banco1$imdb, banco1$engagement)
+
 ggplot(imbdxengajamento) +
   aes(x = banco1.imdb, y = banco1.engagement) +
-  geom_point(colour = "#A11D21", size = 3) +
+  geom_point(colour = "#A11D21", size = 3, alpha= .68) +
   labs(
     x = "Nota IMBD",
     y = "Engajamento"
   ) +
   theme_estat()
+ggsave("disp.pdf", width = 158, height = 93, units = "mm")
 
 
 ggplot(imbdxengajamento) +
@@ -276,8 +282,7 @@ ggplot(imbdxengajamento) +
   labs(
     x = "E",
     y = "f"
-    
-  ) +
+     ) +
   theme_estat()
 mean(imbdxengajamento$banco1.imdb)
 median(imbdxengajamento$banco1.imdb)
@@ -290,6 +295,11 @@ sd(imbdxengajamento$banco1.engagement)
 imbdxengajamento
 cor.test(imbdxengajamento$banco1.imdb, imbdxengajamento$banco1.engagement, method="pearson")
 
+summary(imbdxengajamento) 
+sd(imbdxengajamento$banco1.imdb)
+var(imbdxengajamento$banco1.imdb)
+sd(imbdxengajamento$banco1.engagement)
+var(imbdxengajamento$banco1.engagement)
 
 # análise 5 -----
 

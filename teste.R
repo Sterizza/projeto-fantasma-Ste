@@ -24,7 +24,7 @@ banco1
 # 1) ----
 
 (banco$format)
-tab <- table(banco$format)
+tab <- data.frame(banco$format, banco$date_aired)
 tab
 
 tab2 <- banco1$date_aired
@@ -32,9 +32,11 @@ banco1 %>% distinct(date_aired)
 
 # limpando coluna date_aired#----
 
-banco1$date_aired <- as.Date(banco1$date_aired, "%Y-%m-%d")
-class(banco1$date_aired)
-banco1$date_aired <- year(banco1$date_aired)
+tab$banco.date_aired <- as.Date(tab$banco.date_aired, "%Y-%m-%d")
+class(tab$banco.date_aired)
+tab$banco.date_aired <- year(tab$banco.date_aired)
+tab$banco.date_aired <- NULL
+tab3 <- data.frame(banco$date_aired, banco$format)
 
 #separando em décadas 
 
@@ -42,6 +44,64 @@ data.lançamento <-banco1$date_aired
 décadas <-cut(tentativa, breaks= seq(1960, 2030, by=10), labels= seq(1960, 2020,by=10))
 lançamento.década <- data.frame(ano=data.lançamento, décadas = as.numeric(as.character(decadas)))
 
+tab$decadas <- cut(tab$banco.date_aired, breaks = seq(1960,2030, 10), labels = seq(1960, 2020, 10))
+ggplot(data= tab, mapping= aes(x = decadas, y = banco.format, fill = banco.format ))+
+  geom_col(position="dodge")+
+  labs(x ="Décadas", y = "N° de lançamentos")+
+  theme_estat()
+
+frequencia1 <- tab %>%
+  group_by(banco.format)%>%
+  summarise(freq= n())%>%
+mutate(
+  freq_relativa = round(freq / sum(freq) * 100,1))
+
+porcentagens <- str_c(frequencia$freq_relativa, "%") %>% str_replace("\\.", ",")
+
+legendas <- str_squish(str_c(frequencia$freq, " (", porcentagens, ")"))
+
+frequencia3 <- frequencia
+frequencia3 <- mutate(freq_relativa = round(freq / sum(freq) *100,1))
+
+ggplot(data= frequencia, mapping= aes(x = decadas, y = freq, fill = Formato ))+
+  geom_col(position="dodge")+
+  labs(x ="Décadas", y = "N° de lançamentos")+
+  theme_estat()
+ggsave("barra.pdf", width = 158, height = 93, units = "mm")
+frequencia<-frequencia%>%rename(Formato =banco.format) 
+
+ggplot(frequencia) +
+  aes(
+    x = decadas, y = freq,
+    fill = Formato, label = legendas
+  ) +
+  geom_col(position = position_dodge2(preserve = "single", padding = 0)) +
+  geom_text(
+    position = position_dodge(width = .9),
+    vjust = -0.5, hjust = 0.5,
+    size = 3
+  ) +
+  labs(x = "Décadas", y = "Número de lançamentos") +
+  theme_estat()
+ggsave("colunas-bi-freq.pdf", width = 158, height = 93, units = "mm")
+
+frequencia$Formato <- frequencia$Formato %>% str_replace('Movie', 'Filme')
+frequencia$Formato <- frequencia$Formato %>% str_replace('Serie', 'Série')
+
+ggplot(frequencia) +
+  aes(
+    x = decadas, y = freq,
+    fill = Formato, label= ""
+  ) +
+  geom_col(position = position_dodge2(preserve = "single", padding = 0)) +
+  geom_text(
+    position = position_dodge(width = .9),
+    vjust = -0.5, hjust = 0.5,
+    size = 3
+  ) +
+  labs(x = "Décadas", y = "Número de lançamentos") +
+  theme_estat()
+                   
 #tentando agrupar date_aired com format 
 
 formato <- banco1$format
@@ -90,7 +150,7 @@ ggplot(data= dados, mapping= aes(x = década, y= Freq, fill = Formato ))+
   theme_estat()
 ggsave("análise1.pdf", width = 158, height = 93, units = "mm")
 
-dados<-dados%>%rename(Formato=banco1.format)
+frequencia<-frequencia%>%rename(Formato=banco.format)
 
 tentativatab
 
@@ -233,10 +293,37 @@ terreno.armadilha
 terreno1 <- data.frame(terreno1$Freq/sum(terreno1$Freq))
 tabela.terreno <- table(banco1$setting_terrain)
 tabela1 <- terreno1%>%
-  mutate(frequencia.relativa = 100*(Freq/sum(Freq)))
+  mutate(frequencia.relativa = round(Freq / sum(Freq) * 100,1))
+tabelat <- data.frame(banco$setting_terrain)
+tabelat <- tabelat%>%
+  group_by(banco.setting_terrain) %>%
+  summarise(freq = n()) %>%
+  mutate(
+    freq_relativa = round(freq / sum(freq) * 100,1)
+  )
+porcentagens2 <- str_c(tabelat$freq_relativa, "%") %>% str_replace("\\.", ",")
+
+legendas2 <- str_squish(str_c(tabelat$freq, " (", porcentagens2, ")"))
 tabela.terreno
 sum(tabela1$frequencia.relativa)
 
+
+teste$banco.setting_terrain <- teste$banco.setting_terrain %>% str_replace('Urban', 'Urbano')
+teste$banco.setting_terrain <- teste$banco.setting_terrain %>% str_replace('Forest', 'Floresta')
+teste$banco.setting_terrain <- teste$banco.setting_terrain %>% str_replace('Desert', 'Deserto')
+teste$banco.setting_terrain <- teste$banco.setting_terrain %>%str_replace('Island', 'Ilha')
+teste$banco.setting_terrain <- teste$banco.setting_terrain %>%str_replace('Snow', 'Neve')
+teste$banco.setting_terrain <- teste$banco.setting_terrain %>%str_replace('Swamp', 'Pântano')
+teste$banco.setting_terrain <- teste$banco.setting_terrain %>%str_replace('Coast', 'Costa')
+teste$banco.setting_terrain <- teste$banco.setting_terrain %>%str_replace('Jungle', 'Selva')
+teste$banco.setting_terrain <- teste$banco.setting_terrain %>%str_replace('Ocean', 'Oceano')
+teste$banco.setting_terrain <- teste$banco.setting_terrain %>%str_replace('Cave', 'Caverna')
+teste$banco.setting_terrain <- teste$banco.setting_terrain %>%str_replace('Space', 'Espaço')
+teste$banco.setting_terrain <- teste$banco.setting_terrain %>%str_replace('Air', 'Ar')
+teste$banco.setting_terrain <- teste$banco.setting_terrain %>%str_replace('Moon', 'Lua')
+teste$banco.setting_terrain <- teste$banco.setting_terrain %>%str_replace('Mountain', 'Montanha')
+teste$banco.trap_work_first <- teste$banco.trap_work_first %>% str_replace('False', 'Não Funcionou' )
+teste$banco.trap_work_first <- teste$banco.trap_work_first %>% str_replace('True', 'Funcionou' )
 # gráfico pra terreno mais frequente 
 
 ggplot(data= tabela1, mapping= aes(x = reorder(Var1, frequencia.relativa), y= frequencia.relativa))+
@@ -245,21 +332,80 @@ ggplot(data= tabela1, mapping= aes(x = reorder(Var1, frequencia.relativa), y= fr
   theme_estat()
 ggsave("barr.pdf", width = 158, height = 93, units = "mm")
 
+ggplot(tabelat) +
+  aes(
+    x = fct_reorder(banco.setting_terrain, freq, .desc = T), y = freq,
+    fill = "#A11D21", label = legendas2
+  ) +
+  geom_col(position = position_dodge2(preserve = "single", padding = 0)) +
+  geom_text(
+    position = position_dodge(width = .9),
+    vjust = -0.5, hjust = 0.5,
+    size = 3
+  ) +
+  labs(x = "Terreno", y = "Frequência") +
+  theme_estat()
+ggsave("colunas-freq.pdf", width = 158, height = 93, units = "mm")
+
+ggplot(tabelat) +
+  aes(x = fct_reorder(banco.setting_terrain, freq, .desc=T), y = freq, label = legendas2) +
+  geom_bar(stat = "identity", fill = "#A11D21", width = 0.7) +
+  geom_text(
+    position = position_dodge(width = .9),
+    vjust = -0.5, #hjust = .5,
+    size = 3
+  ) + 
+  labs(x = "Terrenos", y = "Frequência") +
+  theme_estat()
+ggsave("colunas-uni-freqv.pdf", width = 158, height = 93, units = "mm")
+
 # limpando df (tipo de terreno x ativação da armadilha)
 terreno
-teste <- terreno.armadilha 
-teste <- as.data.frame(teste)
-teste<- slice(teste, c(5, 11, 15, 20, 26, 30, 35, 41, 45))
-teste<- slice(teste, 4:9)
-
+teste <- data.frame(banco$setting_terrain, banco$trap_work_first)
+teste <- slice( teste, -c(5,7,26,34,44,79,81,91,96,99,105,125,148,161,164,171,185,196,247,258,280,291,334,339,357,360,361,372,377,380,390,404,417,452,462,505,518,543,583,602))
+teste <- slice(teste, -c(3,14,30,38,67,91,94,100,101,115,126,153,180,227,234,252,257,318,328,349,378,433,449,473,481,145,184,367,498,547,474,120,15,31,50,92,93,99,104,141,164,165,225,255,259,266,267,320,329,341,344,363,477,499,506,536,555,11,33,49,55,57,71,145,158,167,184,261,279,286,291,313,367,392,419,476,498,520,524,544,547,2,4,12,39,60,68,80,83,110,112,133,136,149,150,154,169,172,182,186,202,211,226,251,271,289,359,361,380,394,430,446,447,460,461,465,487,488,314,21,87,88,105,118,119,156,163,178,230,233,321,327,368,445,12,60,80,112,149,154,182,202,271,361,380,430,461,4,110,172,186,446,447,460,465,514,65,70,86,148,287,374,429,419,556))
+teste<- slice(teste, c(11,12,13,27,28,29,38,39,40))
+teste<- slice(teste, -c(340))
+teste<- slice(teste, c(3, 407, 2,9,10,12,15,19,21,24,42,50,54,74,79,81,198,200,202,205,231,237,241,245,251,285,287,289,290,292,299,300,301,302,303,305,306,307,312,314,315,316,318,320,321,324,325,326,329,331,337,338,339,344,345,352,353,354,355,357,359,360,361,365,366,368,369,370,372,374,376,377,378,381,385,394,396,397,403,405,408,409,410,411,412,414,417,418,420,421,3,5,6,11,13,14,32,33,34,35,36,37,40,43,44,45,66,70,85,91,95,97,113,143,173,197,206,207,208,209,210,211,217,218,219,223,229,230,232,233,235,243,244,250,254,255,256,260,267,279,280,281,282,284,286,288,291,293,308,311,313,322,323,328,333,334,335,336,340,342,343,346,347,356,362,363,364,367,371,382,383,388,390,391,392,393,395,398,399,402,406,413,415,416,419))
+teste <- slice(teste, c(22,24,52,56,118,267,376,384,402,470,486,519,528,553,559, 564,567,575,589,597, 21,78,124,134,337,364,474,479,490,501,516,520,530,537,539,546,555,576,580,588,6,19,25,32,39,64,136,304,306,310,315,348,358,369,379,426,429,432,434,441,442,443,444,445,447,448,449,458,459,460,467,469,472,473,477,489,491,499,511,514,523,531,533,534,541,545,547,550,566,569,578,581,584,585,587,590,593,596,598,599,8,20,50,51,53,61,66,67,68,141,150,155,157,191,228,303,316,317,318,319,320,321,327,328,329,333,346,347,349,350,355,366,367,383,391,419,420,421,422,424,428,430,435,450,455,457,471,476,485,487,493,497,498,502,503,529,532,538,551,561,563,565,570,571,579,591,10,11,57,109,385,433,488,527,592,18,30,84,431,456,463,515,522,526,568))
+teste <- filter(teste$banco.setting_terrain == "Urbano", "Rural", "Floresta")
+class(teste$banco.setting_terrain)
+teste <- teste%>%
+  group_by(banco.setting_terrain, banco.trap_work_first) %>%
+  summarise(freq = n()) %>%
+  mutate(
+    freq_relativa = round(freq / sum(freq) * 100,1)
+  )
+teste <- slice(teste, c(2,9,10,12,15,19,21,24,42,50,54,74,79,81,198,200,202,205,231,237,241,245,251,285,287,289,290,292,299,300,301,302,303,305,306,307,312,314,315,316,318,320,321,324,325,326,329,331,337,338,339,344,345,352,353,354,355,357,359,360,361,365,366,368,369,370,372,374,376,377,378,381,385,394,396,397,403,405,407,408,409,410,411,412,414,417,418,420,421,3,5,6,11,13,14,32,33,34,35,36,37,40,43,44,45,66,70,85,91,95,97,113,143,173,197,206,207,208,209,210,211,217,218,219,223,229,230,232,233,235,243,244,250,254,255,256,260,267,279,280,281,282,284,286,288,291,293,308,311,313,322,323,328,333,334,335,336,340,342,343,346,347,356,362,363,364,367,371,382,383,388,390,391,392,393,395,398,399,402,406,413,415,416,418))
+teste$banco.trap_work_first <- NULL
 #gráfico tipo de terreno x ativação da armadilha 
 
-teste <- rename(teste, ativação= Var2)
+teste <- rename(teste, Ativação = ativação)
 ggplot(data= teste, mapping= aes(x = Var1, y= Freq, fill = ativação ))+
   geom_col(position="dodge")+
   labs(x="Tipo de terreno", y= "N° de ativações")+
   theme_estat()
 ggsave("barr2.pdf", width = 158, height = 93, units = "mm")
+
+
+porcentagens3 <- str_c(teste$freq_relativa, "%") %>% str_replace("\\.", ",")
+
+legendas3 <- str_squish(str_c(teste$freq, " (", porcentagens3, ")"))
+
+ggplot(teste) +
+  aes(
+    x = fct_reorder(banco.setting_terrain, freq, .desc = T), y = freq,
+    fill = Ativação, label = legendas3
+  ) +
+  geom_col(position = position_dodge2(preserve = "single", padding = 0)) +
+  geom_text(
+    position = position_dodge(width = .9),
+    vjust = -0.5, hjust = 0.5,
+    size = 3
+  ) +
+  labs(x = "Terrenos", y = "Número de ativações") +
+  theme_estat()
+ggsave("colunas-bi-freq2.pdf", width = 158, height = 93, units = "mm")
 
 # análise 4 ----
 
@@ -466,4 +612,376 @@ ggsave("box_bi.pdf", width = 158, height = 93, units = "mm")
 
 tentativa$novacoluna <- ifelse(is.na(tentativa$banco.unmask_daphnie), tentativa$banco.unmask_daphnie, tentativa$banco.unmask_velma)
 
-solução <- data.frame(banco$engagement)                
+solução <- data.frame(banco$engagement)  
+testeF <- fred
+testeF$banco.unmask_fred <- NULL
+
+TesteD <- daphT
+TesteD$banco.unmask_daphnie <- NULL
+
+testeV <- velmaT
+testeV$banco.unmask_velma <- NULL
+
+testeSh <- shaggyT
+testeSh$banco.unmask_shaggy <- NULL
+
+testeS <- scoobyT
+testeS$banco.unmask_scooby <- NULL
+
+testeO <- otherT
+testeO$banco.unmask_other <-NULL
+
+engajamento <- c( 199.58, 173.24, 178.03, 162.79, 205.93, 162.40, 212.23, 119.51, 177.33, 168.91, 170.22, 149.76, 229.42, 160.10, 204.37, 158.66, 212.00, 172.45, 134.81, 182.58, 181.53, 228.27, 130.57, 132.24, 221.34, 176.53, 140.01, 244.07, 149.75, 208.30, 153.25, 135.19, 123.47, 153.76, 220.36 , 170.24, 125.29, 196.52, 218.35, 233.00, 216.71, 187.67 ,154.76 ,162.74, 196.26 ,161.89 ,190.30 , 162.26 ,195.84 ,162.76 ,176.83 , 191.17 ,104.88 ,221.64 , 132.81, 144.82, 173.19 ,213.97 , 167.24 ,169.44,
+  161.47, 
+  173.32 ,
+  200.12,
+  258.83 ,
+  153.15 ,
+  177.76 ,
+  138.36 ,
+  189.54 ,
+  148.32 ,
+  145.03 ,
+  214.00 ,
+  135.96 ,
+  177.05 ,
+  168.31 ,
+  205.63 ,
+  190.47, 
+  201.20,
+  175.93 ,
+  185.16 ,
+  200.25 ,
+  147.95 ,
+  195.78 ,
+  146.59 ,
+  166.33 ,
+  245.06 ,
+  161.71 ,
+  159.64 ,
+  168.00 ,
+  173.76 ,
+  201.36 ,
+  154.45 ,
+  213.32 ,
+  167.49 ,
+  180.09 ,
+  152.74 ,
+  160.01 ,
+  204.88 ,
+  177.40 ,
+  180.85 ,
+  162.67 ,
+  179.22 ,
+  173.72 ,
+  212.58 ,
+  212.23 ,
+  169.74 ,
+  173.67 ,
+  187.72 ,
+  211.46 ,
+  184.72 ,
+  214.99 ,
+  202.76 ,
+  188.97 ,
+  153.37 ,
+  161.23 ,
+  169.39 ,
+  176.34 ,
+  180.48 ,
+  158.05 ,
+  169.97 ,
+  144.05 ,
+  175.65 ,
+  130.72 ,
+  159.89 ,
+  175.48 ,
+  160.18 ,
+  190.30 ,
+  162.26 ,
+  208.02 ,
+  216.32 ,
+  204.07 ,
+  191.04 ,
+  197.17 ,
+  160.84 ,
+  203.68 ,
+  188.28 ,
+  157.37 ,
+  159.64 ,
+  200.36 ,
+  160.01 ,
+  151.86 ,
+  191.48 ,
+  212.23 ,
+  212.00 ,
+  169.74 ,
+  176.53 ,
+  202.75 ,
+  208.30 ,
+  169.22 ,
+  193.19 ,
+  193.76 ,
+  188.19 ,
+  170.09 ,
+  214.71 ,
+  129.78 ,
+  183.26 ,
+  184.02 ,
+  159.20 ,
+  128.99 ,
+  201.92 ,
+  213.50 ,
+  168.21 ,
+  143.04 ,
+  194.07 ,
+  186.47 ,
+  194.57 ,
+  211.70 ,
+  178.53 ,
+  165.00 ,
+  156.12 ,
+  164.55 ,
+  167.83 ,
+  220.17 ,
+  154.90 ,
+  164.60 ,
+  205.76 ,
+  178.20 ,
+  160.18 ,
+  190.30 ,
+  191.00 ,
+  196.84 ,
+  165.98 ,
+  206.54 ,
+  201.56 ,
+  175.59 ,
+  216.32 ,
+  173.47 ,
+  162.50 ,
+  184.68 ,
+  207.53 ,
+  163.37 ,
+  144.93 ,
+  169.02 ,
+  194.70 ,
+  210.61 ,
+  181.87 ,
+  192.23 ,
+  124.40 ,
+  226.21 ,
+  195.72 ,
+  186.27 ,
+  146.53 ,
+  173.41 ,
+  203.68 ,
+  159.29 ,
+  175.48 ,
+  249.06 ,
+  143.84 ,
+  157.37 ,
+  187.32 ,
+  192.15 ,
+  214.00 ,
+  198.39 ,
+  156.86 ,
+  171.46 ,
+  164.91 ,
+  205.65 ,
+  204.35 ,
+  182.64 ,
+  175.36 ,
+  159.64 ,
+  187.88 ,
+  136.39 ,
+  169.28 ,
+  133.40 ,
+  152.74 ,
+  213.72 ,
+  180.64 ,
+  160.01 ,
+  215.79 ,
+  174.16 ,
+  191.29 ,
+  192.69 ,
+  156.69 ,
+  161.62 ,
+  212.23 ,
+  181.47 ,
+  177.56 ,
+  132.24 ,
+  176.53 ,
+  208.30 ,
+  202.76 ,
+  180.39 ,
+  124.10,
+  233.00 ,
+  127.18 ,
+  169.70 ,
+  188.45 ,
+  127.86 ,
+  212.23 ,
+  225.27 ,
+  181.47 ,
+  160.10 ,
+  166.26 ,
+  188.29 ,
+  193.99 ,
+  149.66 ,
+  180.08 ,
+  229.69 ,
+  173.45 ,
+  180.38 ,
+  163.37 ,
+  178.41 ,
+  167.15 ,
+  149.24 ,
+  184.25 ,
+  196.12 ,
+  169.61 ,
+  188.28,
+  140.70 ,
+  164.31 ,
+  227.91 ,
+  178.24 ,
+  190.81 ,
+  204.37 ,
+  199.88 ,
+  208.39 ,
+  170.24 ,
+  180.55 ,
+  207.81 ,
+  194.14 ,
+  148.19 ,
+  173.50 ,
+  194.04 ,
+  179.43 ,
+  163.63 ,
+  175.36 ,
+  169.28 ,
+  190.48 ,
+  201.31 ,
+  147.13 ,
+  156.41 ,
+  144.49 ,
+  202.19 ,
+  169.22 ,
+  153.93 ,
+  160.11 ,
+  155.32 ,
+  199.10 ,
+  204.63 ,
+  196.36 ,
+  145.08 ,
+  185.42 ,
+  182.90,
+  193.47)
+
+Personagens.cap <- c("Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred","Fred" ,"Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred","Fred","Fred","Fred", "Fred" , "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred", "Fred" , "Fred", "Fred" ,"Fred" , "Fred" , "Fred" , "Fred" , "Fred" , "Fred" , "Fred" , "Fred" , "Fred", "Fred" , "Fred" , "Fred" , "Fred" , "Fred" , "Fred" , "Fred", "Fred" , "Fred" ,"Fred", "Fred" ,"Fred" , "Fred" , "Fred", "Fred" , "Fred" , "Fred" , "Fred" , "Fred" , "Fred" , "Fred" , "Fred" ,"Fred" ,"Fred" , "Fred" , "Fred" , "Fred",  "Fred" , "Fred" , "Fred" ,"Fred" , "Fred" , "Fred", "Fred", "Fred" , "Fred", "Fred", "Fred", "Fred", 
+"Daphnie", "Daphnie", "Daphnie","Daphnie", "Daphnie", "Daphnie", "Daphnie" , "Daphnie" , "Daphnie" , "Daphnie" , 
+"Daphnie", 
+"Daphnie" , 
+"Daphnie" , 
+"Daphnie" , "Daphnie" , 
+"Daphnie" , 
+"Daphnie" , 
+"Daphnie" , 
+"Daphnie" , "Daphnie" , 
+"Daphnie", "Daphnie" , "Daphnie" , "Daphnie" , "Daphnie" , "Daphnie" , 
+"Daphnie" , "Daphnie" , "Daphnie" , "Daphnie" , "Daphnie",  "Daphnie" ,"Daphnie" , "Daphnie", "Daphnie", 
+"Daphnie", "Daphnie", 
+"Velma", 
+"Velma", "Velma", "Velma", "Velma","Velma", "Velma", "Velma", 
+"Velma", "Velma", "Velma", "Velma", "Velma", "Velma", "Velma","Velma","Velma","Velma", 
+"Velma", 
+"Velma", "Velma", 
+"Velma", 
+"Velma", 
+"Velma", 
+"Velma", "Velma", "Velma", 
+"Velma", 
+"Velma", 
+"Velma", 
+"Velma", "Velma", 
+"Velma", "Velma", "Velma", "Velma", 
+"Velma", "Velma","Velma","Velma","Velma", "Velma", "Velma","Velma", "Velma", "Velma", "Velma","Velma", "Velma", "Velma", "Velma", "Velma", "Velma", "Velma", 
+"Velma", "Velma","Velma","Velma", 
+"Velma", 
+"Velma", 
+"Velma", "Velma","Velma", "Velma", "Velma","Velma", "Velma", "Velma", "Velma", "Velma", "Velma", 
+"Velma", 
+"Velma", 
+"Velma", "Velma","Velma", "Velma", 
+"Velma", 
+"Velma", "Velma", "Velma", "Velma", "Velma", "Velma", "Velma", "Velma", "Velma","Velma", 
+"Velma", 
+"Velma", 
+"Velma", 
+"Velma", "Velma", "Velma", 
+"Shaggy",  
+"Shaggy", "Shaggy", 
+"Shaggy", "Shaggy", "Shaggy", 
+"Shaggy", 
+"Shaggy", "Shaggy", 
+"Shaggy", "Shaggy", 
+"Shaggy", 
+"Shaggy", 
+"Scooby","Scooby", 
+"Scooby", 
+"Scooby", "Scooby", "Scooby", 
+"Scooby","Scooby", "Scooby", 
+"Scooby", "Scooby", "Scooby", "Scooby", "Scooby", 
+"Scooby", "Scooby", "Scooby", 
+"Scooby", 
+"Scooby", "Scooby", "Scooby","Scooby", 
+"Scooby", "Other", 
+"Other","Other","Other", "Other","Other", "Other", "Other","Other", "Other", 
+"Other", 
+"Other","Other", 
+"Other", 
+"Other", "Other", "Other", 
+"Other", "Other", "Other", 
+"Other", "Other", "Other", 
+"Other", "Other","Other", 
+"Other", 
+"Other", 
+"Other", "Other", "Other", "Other", "Other", "Other","Other") 
+
+sla$Personagens.cap <- sla$Personagens.cap %>% str_replace('Fred', 'Fred')
+sla$Personagens.cap <- sla$Personagens.cap %>% str_replace('Shaggy', 'Salsicha')
+sla$Personagens.cap <- sla$Personagens.cap %>% str_replace('Other', 'Outro')
+sla <- data.frame(engajamento, Personagens.cap)  
+
+ggplot(sla) +
+  aes(x = Personagens.cap, y = engajamento) +
+  geom_boxplot(fill = c("#A11D21"), width = 0.5) +
+  stat_summary(
+    fun = "mean", geom = "point", shape = 23, size = 3, fill = "white"
+  ) +
+  labs(x = "Personagens", y = "Engajamento") +
+  theme_estat()
+ggsave("box_bi.pdf", width = 158, height = 93, units = "mm")
+
+ggplot(sla) +
+  aes(x = reorder(Personagens.cap, engajamento, FUN = median), y = engajamento) +
+  geom_boxplot(fill = c("#A11D21"), width = 0.5) +
+  stat_summary(
+    fun = "mean", geom = "point", shape = 23, size = 3, fill = "white"
+  ) +
+  labs(x = "Personagem", y = "Engajamento") +
+  theme_estat()
+ggsave("box_bi.pdf", width = 158, height = 93, units = "mm")
+  
+tentativa2 <- sla 
+  
+ggplot(tentativa2) +
+  aes(x = reorder(Personagens.cap, engajamento, FUN = median), y = engajamento) +
+  geom_boxplot(fill = c("#A11D21"), width = 0.5) +
+  stat_summary(
+    fun = "mean", geom = "point", shape = 23, size = 3, fill = "white"
+  ) +
+  labs(x = "Engajamento", y = "Personagem") +
+  theme_estat()  
+  
+  
+  

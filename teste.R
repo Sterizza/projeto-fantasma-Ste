@@ -27,36 +27,15 @@ banco1
 tab <- data.frame(banco$format, banco$date_aired)
 tab
 
-tab2 <- banco1$date_aired
-banco1 %>% distinct(date_aired)
-
 # limpando coluna date_aired#----
 
 tab$banco.date_aired <- as.Date(tab$banco.date_aired, "%Y-%m-%d")
 class(tab$banco.date_aired)
 tab$banco.date_aired <- year(tab$banco.date_aired)
-tab$banco.date_aired <- NULL
-tab <- data.frame(banco$date_aired, banco$format)
 
 #separando em décadas 
 
-data.lançamento <-banco1$date_aired
-décadas <-cut(tentativa, breaks= seq(1960, 2030, by=10), labels= seq(1960, 2020,by=10))
-lançamento.década <- data.frame(ano=data.lançamento, décadas = as.numeric(as.character(decadas)))
-
 tab$decadas <- cut(tab$banco.date_aired, breaks = seq(1960,2030, 10), labels = seq(1960, 2020, 10))
-ggplot(data= tab, mapping= aes(x = decadas, y = banco.format, fill = banco.format ))+
-  geom_col(position="dodge")+
-  labs(x ="Décadas", y = "N° de lançamentos")+
-  theme_estat()
-
-ggplot(tab) +
-  aes(x = decadas, y = , group = produto, colour = produto) +
-  geom_line(size = 1) +
-  geom_point(size = 2) +
-  labs(x = "Ano", y = "Preço") +
-  theme_estat()
-ggsave("series_grupo.pdf", width = 158, height = 93, units = "mm")
 
 frequencia <- tab %>%
   group_by(banco.format, decadas)%>%
@@ -64,65 +43,10 @@ frequencia <- tab %>%
 mutate(
   freq_relativa = round(freq / sum(freq) * 100,1))
 
-porcentagens <- str_c(frequencia$freq_relativa, "%") %>% str_replace("\\.", ",")
-
-legendas <- str_squish(str_c(frequencia$freq, " (", porcentagens, ")"))
-
-frequencia3 <- frequencia
-frequencia3 <- mutate(freq_relativa = round(freq / sum(freq) *100,1))
-
-ggplot(data= frequencia, mapping= aes(x = decadas, y = freq, fill = Formato ))+
-  geom_col(position="dodge")+
-  labs(x ="Décadas", y = "N° de lançamentos")+
-  theme_estat()
-ggsave("barra.pdf", width = 158, height = 93, units = "mm")
 frequencia<-frequencia%>%rename(Formato =banco.format) 
-
-ggplot(frequencia) +
-  aes(
-    x = decadas, y = freq,
-    fill = Formato, label = legendas
-  ) +
-  geom_col(position = position_dodge2(preserve = "single", padding = 0)) +
-  geom_text(
-    position = position_dodge(width = .9),
-    vjust = -0.5, hjust = 0.5,
-    size = 3
-  ) +
-  labs(x = "Décadas", y = "Número de lançamentos") +
-  theme_estat()
-ggsave("colunas-bi-freq.pdf", width = 158, height = 93, units = "mm")
 
 frequencia$Formato <- frequencia$Formato %>% str_replace('Movie', 'Filme')
 frequencia$Formato <- frequencia$Formato %>% str_replace('Serie', 'Série')
-
-ggplot(frequencia) +
-  aes(
-    x = decadas, y = freq,
-    fill = Formato, label= ""
-  ) +
-  geom_col(position = position_dodge2(preserve = "single", padding = 0)) +
-  geom_text(
-    position = position_dodge(width = .9),
-    vjust = -0.5, hjust = 0.5,
-    size = 3
-  ) +
-  labs(x = "Décadas", y = "Número de lançamentos") +
-  theme_estat()
-                   
-#tentando agrupar date_aired com format 
-
-formato <- banco1$format
-lançamento.formato <- banco1%>%
-  group_by(lançamento.década, formato)
-
-
-frequência <- table(tentativatab)
-frequência.lançamento <- data.frame(tentativatab)
-frequência.lançamento <- seq()
-formato <- as.data.frame(formato)
-lançamentos <- tentativatab %>%
-  group_by(lançamento.década)
 
 #gráfico análise 1 
 
@@ -161,16 +85,6 @@ theme_estat <- function(...) {
     )
   )
 }
-
-ggplot(data= dados, mapping= aes(x = década, y= Freq, fill = Formato ))+
-  geom_col(position="dodge")+
-  labs(x="Décadas", y= "N° de lançamentos")+
-  theme_estat()
-ggsave("análise1.pdf", width = 158, height = 93, units = "mm")
-
-frequencia<-frequencia%>%rename(Formato=banco.format)
-
-tentativatab
 
 # 2) análise 2 
 

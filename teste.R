@@ -1,4 +1,4 @@
-banco1 <-read.csv("banco_final.csv")
+banco <-read.csv("banco_final.csv")
 library(tidyverse)
 
 # projeto fantasma - estat#
@@ -36,7 +36,7 @@ tab$banco.date_aired <- as.Date(tab$banco.date_aired, "%Y-%m-%d")
 class(tab$banco.date_aired)
 tab$banco.date_aired <- year(tab$banco.date_aired)
 tab$banco.date_aired <- NULL
-tab3 <- data.frame(banco$date_aired, banco$format)
+tab <- data.frame(banco$date_aired, banco$format)
 
 #separando em décadas 
 
@@ -50,8 +50,16 @@ ggplot(data= tab, mapping= aes(x = decadas, y = banco.format, fill = banco.forma
   labs(x ="Décadas", y = "N° de lançamentos")+
   theme_estat()
 
-frequencia1 <- tab %>%
-  group_by(banco.format)%>%
+ggplot(tab) +
+  aes(x = decadas, y = , group = produto, colour = produto) +
+  geom_line(size = 1) +
+  geom_point(size = 2) +
+  labs(x = "Ano", y = "Preço") +
+  theme_estat()
+ggsave("series_grupo.pdf", width = 158, height = 93, units = "mm")
+
+frequencia <- tab %>%
+  group_by(banco.format, decadas)%>%
   summarise(freq= n())%>%
 mutate(
   freq_relativa = round(freq / sum(freq) * 100,1))
@@ -117,6 +125,16 @@ lançamentos <- tentativatab %>%
   group_by(lançamento.década)
 
 #gráfico análise 1 
+
+
+ggplot(frequencia) +
+  aes(x = decadas, y = freq, group = Formato, colour = Formato) +
+  geom_line(size = 1) +
+  geom_point(size = 2) +
+  labs(x = "Décadas", y = "Número de lançamentos") +
+  theme_estat()
+ggsave("series_grupo.pdf", width = 158, height = 93, units = "mm")
+
 
 estat_colors <- c(
   "#A11D21", "#003366", "#CC9900",
@@ -970,7 +988,7 @@ ggplot(sla) +
   ) +
   labs(x = "Personagem", y = "Engajamento") +
   theme_estat()
-ggsave("box_bi.pdf", width = 158, height = 93, units = "mm")
+ggsave("box_biC.pdf", width = 158, height = 93, units = "mm")
   
 tentativa2 <- sla 
   
